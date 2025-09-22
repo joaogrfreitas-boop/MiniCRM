@@ -1,20 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Board</h2>
-<div class="row g-3">
-  {% for stage, cards in columns.items() %}
-  <div class="col">
-    <div class="card h-100">
-      <div class="card-header">{{ stage }}</div>
-      <ul class="list-group list-group-flush">
-        {% for c in cards %}
-        <li class="list-group-item">{{ c.company_name }} — <strong>{{ c.name }}</strong></li>
-        {% else %}
-        <li class="list-group-item text-muted">Sem itens</li>
-        {% endfor %}
-      </ul>
+<h2 class="mb-3">Board</h2>
+<div class="board-grid">
+  {% for stage in stages %}
+  <section class="board-col" data-stage="{{ stage }}">
+    <header class="board-col-title">{{ stage }}</header>
+    <div class="board-col-body" ondragover="event.preventDefault();">
+      {% for c in columns[stage] %}
+      <article class="card-lead" draggable="true" data-id="{{ c.id }}"
+        ondragstart="boardDragStart(event)">
+        <div class="company">{{ c.company_name }}</div>
+        <div class="person">{{ c.name }}</div>
+      </article>
+      {% else %}
+      <div class="text-muted small px-2 py-1">Sem itens</div>
+      {% endfor %}
     </div>
-  </div>
+  </section>
   {% endfor %}
 </div>
 {% endblock %}

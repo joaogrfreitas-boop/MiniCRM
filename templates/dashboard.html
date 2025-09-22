@@ -1,18 +1,70 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Dashboard</h2>
-<div class="row g-3">
-  <div class="col-md-3"><div class="card"><div class="card-body">
-    <div class="text-muted">Empresas</div><div class="display-6">{{ kpis.empresas }}</div>
-  </div></div></div>
-  <div class="col-md-3"><div class="card"><div class="card-body">
-    <div class="text-muted">Contatos</div><div class="display-6">{{ kpis.contatos }}</div>
-  </div></div></div>
-  <div class="col-md-3"><div class="card"><div class="card-body">
-    <div class="text-muted">Ativas</div><div class="display-6">{{ kpis.ativos }}</div>
-  </div></div></div>
-  <div class="col-md-3"><div class="card"><div class="card-body">
-    <div class="text-muted">Inativas</div><div class="display-6">{{ kpis.inativos }}</div>
-  </div></div></div>
+<h2 class="mb-3">Dashboard</h2>
+
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-lg-3">
+    <div class="am-card-kpi">
+      <div class="label">Empresas</div>
+      <div class="value">{{ kpis.empresas }}</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="am-card-kpi">
+      <div class="label">Contatos</div>
+      <div class="value">{{ kpis.contatos }}</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="am-card-kpi">
+      <div class="label">Ativas</div>
+      <div class="value text-success">{{ kpis.ativos }}</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="am-card-kpi">
+      <div class="label">Inativas</div>
+      <div class="value text-danger">{{ kpis.inativos }}</div>
+    </div>
+  </div>
 </div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="am-panel">
+      <div class="am-panel-title">Empresas — Status Efetivo</div>
+      <canvas id="effChart" height="120"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="am-panel">
+      <div class="am-panel-title">Contatos — por Estágio</div>
+      <canvas id="stageChart" height="120"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const effCtx = document.getElementById('effChart');
+  new Chart(effCtx, {
+    type: 'doughnut',
+    data: {
+      labels: {{ eff_labels|tojson }},
+      datasets: [{ data: {{ eff_counts|tojson }} }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+  });
+
+  const stCtx = document.getElementById('stageChart');
+  new Chart(stCtx, {
+    type: 'bar',
+    data: {
+      labels: {{ contact_labels|tojson }},
+      datasets: [{ data: {{ contact_counts|tojson }}, borderWidth: 1 }]
+    },
+    options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display:false } } }
+  });
+})();
+</script>
 {% endblock %}

@@ -1,11 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Dash Empresas</h2>
-<ul>
-  <li>Total: {{ kpi.total }}</li>
-  <li>Mapeados: {{ kpi.mapeados }} ({{ kpi.mapeados_pct }}%)</li>
-  <li>Acionados: {{ kpi.acionados }} ({{ kpi.acionados_pct }}%)</li>
-  <li>Retorno Positivo: {{ kpi.retorno_pos }} ({{ kpi.retorno_pos_pct }}%)</li>
-  <li>Potencial Imediato: {{ kpi.potencial_imediato }} ({{ kpi.potencial_imediato_pct }}%)</li>
-</ul>
+<h2 class="mb-3">Dash Empresas</h2>
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-lg-3"><div class="am-card-kpi"><div class="label">Total</div><div class="value">{{ kpi.total }}</div></div></div>
+  <div class="col-sm-6 col-lg-3"><div class="am-card-kpi"><div class="label">Mapeados</div><div class="value">{{ kpi.mapeados }} <span class="pct">({{ kpi.mapeados_pct }}%)</span></div></div></div>
+  <div class="col-sm-6 col-lg-3"><div class="am-card-kpi"><div class="label">Acionados</div><div class="value">{{ kpi.acionados }} <span class="pct">({{ kpi.acionados_pct }}%)</span></div></div></div>
+  <div class="col-sm-6 col-lg-3"><div class="am-card-kpi"><div class="label">Potencial Imediato</div><div class="value">{{ kpi.potencial_imediato }} <span class="pct">({{ kpi.potencial_imediato_pct }}%)</span></div></div></div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="am-panel">
+      <div class="am-panel-title">Empresas por Categoria</div>
+      <canvas id="catChart" height="120"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="am-panel">
+      <div class="am-panel-title">Top Subcategorias</div>
+      <canvas id="subChart" height="120"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  new Chart(document.getElementById('catChart'), {
+    type: 'bar',
+    data: { labels: {{ cat_labels|tojson }}, datasets: [{ data: {{ cat_counts|tojson }} }]},
+    options: { plugins: { legend: { display:false } }, scales: { y: { beginAtZero: true } } }
+  });
+  new Chart(document.getElementById('subChart'), {
+    type: 'bar',
+    data: { labels: {{ sub_labels|tojson }}, datasets: [{ data: {{ sub_counts|tojson }} }]},
+    options: { plugins: { legend: { display:false } }, scales: { y: { beginAtZero: true } } }
+  });
+})();
+</script>
 {% endblock %}
