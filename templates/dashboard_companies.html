@@ -1,26 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="mb-3">Dash Empresas</h2>
-<div class="row g-3 mb-3">
-  <div class="col-md-3"><div class="card text-bg-dark"><div class="card-body"><div class="small">Empresas Identificadas</div><div class="display-5">{{ kpi.total }}</div></div></div></div>
-  <div class="col-md-3"><div class="card text-bg-secondary"><div class="card-body"><div class="small">Contatos Mapeados</div><div class="display-5">{{ kpi.mapeados }}</div><div class="small opacity-75">Cobertura: {{ kpi.mapeados_pct }}%</div></div></div></div>
-  <div class="col-md-3"><div class="card text-bg-primary"><div class="card-body"><div class="small">Acionados</div><div class="display-5">{{ kpi.acionados }}</div><div class="small opacity-75">Avanço: {{ kpi.acionados_pct }}%</div></div></div></div>
-  <div class="col-md-3"><div class="card text-bg-success"><div class="card-body"><div class="small">Retorno Positivo</div><div class="display-5">{{ kpi.retorno_pos }}</div><div class="small opacity-75">Abertura: {{ kpi.retorno_pos_pct }}%</div></div></div></div>
-</div>
-<div class="row g-3 mb-4">
-  <div class="col-md-3"><div class="card text-bg-warning"><div class="card-body"><div class="small">Potencial Imediato</div><div class="display-5">{{ kpi.potencial_imediato }}</div><div class="small opacity-75">Rate: {{ kpi.potencial_imediato_pct }}%</div></div></div></div>
-</div>
-<div class="row g-3">
-  <div class="col-lg-6"><div class="card h-100"><div class="card-header">Empresas por Setor (Categoria)</div><div class="card-body"><canvas id="catChart" height="120"></canvas></div></div></div>
-  <div class="col-lg-6"><div class="card h-100"><div class="card-header">Top Subcategorias</div><div class="card-body"><canvas id="subChart" height="120"></canvas></div></div></div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
-<script>
-new Chart(document.getElementById('catChart'), { type:'bar',
-  data:{ labels: {{ cat_labels|tojson }}, datasets:[{ label:'Empresas', data: {{ cat_counts|tojson }} }] },
-  options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ autoSkip:false } } } } });
-new Chart(document.getElementById('subChart'), { type:'bar',
-  data:{ labels: {{ sub_labels|tojson }}, datasets:[{ label:'Empresas', data: {{ sub_counts|tojson }} }] },
-  options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ autoSkip:false } } } } });
-</script>
+<h2>Dash Empresas</h2>
+<ul>
+  <li>Total: {{ kpi.total }}</li>
+  <li>Mapeados: {{ kpi.mapeados }} ({{ kpi.mapeados_pct }}%)</li>
+  <li>Acionados: {{ kpi.acionados }} ({{ kpi.acionados_pct }}%)</li>
+  <li>Retorno Positivo: {{ kpi.retorno_pos }} ({{ kpi.retorno_pos_pct }}%)</li>
+  <li>Potencial Imediato: {{ kpi.potencial_imediato }} ({{ kpi.potencial_imediato_pct }}%)</li>
+</ul>
 {% endblock %}
