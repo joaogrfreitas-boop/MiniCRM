@@ -1,0 +1,33 @@
+
+# --- PATCH: A&M Theme + Salesforce-like UI + Edit Company ---
+# 1) Add static include in base.html: <link href="{{ url_for('static', filename='sfdx_am.css') }}" rel="stylesheet">
+# 2) Place static/am_mark.svg and static/sfdx_am.css into /static.
+# 3) Replace templates/base.html, companies_list.html, company_form.html with the provided versions.
+# 4) Add these routes to app.py:
+
+@app.route("/company/<int:cid>/edit")
+def company_edit(cid):
+    conn = get_db()
+    company = conn.execute("SELECT * FROM companies WHERE id=?", (cid,)).fetchone()
+    conn.close()
+    if not company:
+        flash("Empresa não encontrada.","danger")
+        return redirect(url_for("companies_list"))
+    cfg = load_settings(get_db())
+    return render_template("company_form.html", company=company, base_statuses=cfg["company_base_statuses"])
+
+@app.route("/company/<int:cid>", methods=["POST"])
+def company_update(cid):
+    f = request.form
+    conn = get_db()
+    with conn:
+        conn.execute("""UPDATE companies
+                        SET name=?, category=?, subcategory=?, reg_status_base=?,
+                            city=?, state=?, notes=?, updated_at=CURRENT_TIMESTAMP
+                        WHERE id=?""", (
+            f["name"], f.get("category",""), f.get("subcategory",""),
+            f.get("reg_status_base","Listado"), f.get("city",""),
+            f.get("state",""), f.get("notes",""), cid
+        ))
+    flash("Empresa atualizada.","success")
+    return redirect(url_for("companies_list"))

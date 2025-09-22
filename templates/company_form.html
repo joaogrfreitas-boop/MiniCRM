@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-3">{{ 'Editar empresa' if company else 'Nova empresa' }}</h2>
+<form method="post" action="{{ url_for('company_update', cid=company.id) if company else url_for('company_create') }}">
+  <div class="row g-3">
+    <div class="col-md-6"><label class="form-label">Nome</label><input name="name" class="form-control" value="{{ company.name if company else '' }}" required></div>
+    <div class="col-md-3"><label class="form-label">Categoria</label><input name="category" class="form-control" value="{{ company.category if company else '' }}"></div>
+    <div class="col-md-3"><label class="form-label">Subcategoria</label><input name="subcategory" class="form-control" value="{{ company.subcategory if company else '' }}"></div>
+    <div class="col-md-3">
+      <label class="form-label">Status base</label>
+      <select name="reg_status_base" class="form-select">
+        {% for s in base_statuses %}<option value="{{ s }}" {% if company and company.reg_status_base==s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3"><label class="form-label">Cidade</label><input name="city" class="form-control" value="{{ company.city if company else '' }}"></div>
+    <div class="col-md-2"><label class="form-label">UF</label><input name="state" class="form-control" value="{{ company.state if company else '' }}"></div>
+    <div class="col-12"><label class="form-label">Notas</label><textarea name="notes" class="form-control" rows="3">{{ company.notes if company else '' }}</textarea></div>
+    <div class="col-12 d-flex gap-2">
+      <button class="btn btn-primary">Salvar</button>
+      <a class="btn btn-outline-secondary" href="{{ url_for('companies_list') }}">Cancelar</a>
+    </div>
+  </div>
+</form>
+{% endblock %}

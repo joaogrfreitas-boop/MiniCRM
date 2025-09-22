@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-3">Novo contato</h2>
+<form method="post" action="{{ url_for('contact_create') }}">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Empresa</label>
+      <select name="company_id" class="form-select" required>
+        {% for c in companies %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-6"><label class="form-label">Nome</label><input name="name" class="form-control" required></div>
+    <div class="col-md-4"><label class="form-label">Função</label><input name="role" class="form-control"></div>
+    <div class="col-md-4"><label class="form-label">E-mail</label><input name="email" class="form-control"></div>
+    <div class="col-md-4"><label class="form-label">Telefone</label><input name="phone" class="form-control"></div>
+    <div class="col-md-4">
+      <label class="form-label">Estágio</label>
+      <select name="contact_stage" class="form-select">
+        {% for s in ['Contato Inicial','Fazer FUP','Marcar Reunião','Reunião Marcada','Acompanhar','Projeto Ganho','Projeto Perdido','Potencial Futuro'] %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Prioridade</label>
+      <select name="priority" class="form-select">
+        <option value="1">Alta</option><option value="2" selected>Média</option><option value="3">Baixa</option>
+      </select>
+    </div>
+    <div class="col-md-4"><label class="form-label">Próx. data</label><input type="date" name="next_date" class="form-control"></div>
+    <div class="col-12"><label class="form-label">Notas</label><textarea name="notes" class="form-control" rows="3"></textarea></div>
+    <div class="col-12"><button class="btn btn-primary">Salvar</button></div>
+  </div>
+</form>
+{% endblock %}

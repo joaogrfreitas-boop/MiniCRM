@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-3">Configurações</h2>
+<form method="post" class="row g-3">
+  <div class="col-md-6">
+    <label class="form-label">Status base da empresa (separados por vírgula)</label>
+    <textarea name="company_base_statuses" rows="2" class="form-control">{{ cfg.company_base_statuses|join(', ') }}</textarea>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Estágios do contato (separados por vírgula)</label>
+    <textarea name="contact_stages" rows="2" class="form-control">{{ cfg.contact_stages|join(', ') }}</textarea>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Estágios que contam como INATIVOS (separados por vírgula)</label>
+    <textarea name="inactive_stages" rows="2" class="form-control">{{ cfg.inactive_stages|join(', ') }}</textarea>
+    <div class="form-text">Ativo = existe contato em estágio <strong>não</strong> listado aqui; Inativo = existe contato e todos os estágios estão aqui; sem contatos = excluída do efetivo.</div>
+  </div>
+  <div class="col-12">
+    <button class="btn btn-primary">Salvar configurações</button>
+  </div>
+</form>
+<hr class="my-4">
+<form method="post" action="{{ url_for('settings_wipe') }}" onsubmit="return confirm('Tem certeza que deseja apagar TODA a base (empresas, contatos, tarefas)?');">
+  <button class="btn btn-outline-danger">Limpar toda a base (empresas, contatos, tarefas)</button>
+</form>
+{% endblock %}

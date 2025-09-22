@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-3">Empresas</h2>
+<form class="row g-2 mb-3">
+  <div class="col-md-6"><input class="form-control" name="q" placeholder="Buscar por nome/categoria/cidade" value="{{ request.args.get('q','') }}"></div>
+  <div class="col-md-3"><a class="btn btn-success w-100" href="{{ url_for('company_new') }}">Nova empresa</a></div>
+</form>
+
+<div class="table-responsive">
+<table class="table table-sm table-striped align-middle">
+  <thead><tr>
+    {% set next_dir = 'desc' if direction=='asc' else 'asc' %}
+    <th><a href="{{ url_for('companies_list', sort='c.name', dir=next_dir, q=request.args.get('q')) }}">Empresa</a></th>
+    <th><a href="{{ url_for('companies_list', sort='c.category', dir=next_dir, q=request.args.get('q')) }}">Categoria</a></th>
+    <th><a href="{{ url_for('companies_list', sort='c.subcategory', dir=next_dir, q=request.args.get('q')) }}">Subcategoria</a></th>
+    <th><a href="{{ url_for('companies_list', sort='c.city', dir=next_dir, q=request.args.get('q')) }}">Cidade/UF</a></th>
+    <th>Status base</th>
+    <th><a href="{{ url_for('companies_list', sort='v.reg_status_effective', dir=next_dir, q=request.args.get('q')) }}">Status efetivo</a></th>
+    <th class="text-end">Ações</th>
+  </tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr data-id="{{ r.id }}">
+      <td>{{ r.name }}</td>
+      <td>{{ r.category }}</td>
+      <td>{{ r.subcategory }}</td>
+      <td>{{ r.city }}{% if r.state %}/{{ r.state }}{% endif %}</td>
+      <td style="min-width:170px">
+        <select class="form-select form-select-sm quick-reg">
+          {% for s in base_statuses %}<option value="{{s}}" {% if r.reg_status_base==s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+        </select>
+      </td>
+      <td><span class="badge {% if r.reg_status_effective=='Ativo' %}bg-success{% elif r.reg_status_effective=='Inativo' %}bg-secondary{% else %}bg-light text-dark{% endif %}">{{ r.reg_status_effective or '—' }}</span></td>
+      <td class="text-end">
+        <a class="btn btn-sm btn-primary" href="{{ url_for('company_edit', cid=r.id) }}">Editar</a>
+        <form method="post" action="{{ url_for('company_delete', cid=r.id) }}" class="d-inline" onsubmit="return confirm('Excluir empresa e dados associados?')">
+          <button class="btn btn-sm btn-outline-danger">Excluir</button>
+        </form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="7" class="text-center text-muted">Sem empresas.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<script>
+document.querySelectorAll('tr[data-id] .quick-reg').forEach(sel => {
+  sel.addEventListener('change', async (e) => {
+    const tr = e.target.closest('tr'); const id = tr.dataset.id;
+    const res = await fetch(`/company/${id}/regstatus`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ reg_status_base: e.target.value })
+    });
+    if (!res.ok) alert('Erro ao salvar.');
+    else location.reload();
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-3">Contatos</h2>
+<form class="row g-2 mb-3">
+  <div class="col-md-4"><input class="form-control" name="q" placeholder="Buscar por nome/email/telefone/empresa" value="{{ request.args.get('q','') }}"></div>
+  <div class="col-md-4">
+    <select name="company_id" class="form-select">
+      <option value="">Todas as empresas</option>
+      {% for c in companies %}
+        {% set cid = c.id|string %}
+        <option value="{{ c.id }}" {% if request.args.get('company_id') == cid %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2"><button class="btn btn-primary w-100">Filtrar</button></div>
+  <div class="col-md-2"><a href="{{ url_for('contact_new') }}" class="btn btn-success w-100">Novo contato</a></div>
+</form>
+
+<div class="table-responsive">
+<table class="table table-sm table-striped align-middle">
+  <thead><tr>
+    {% set next_dir = 'desc' if direction=='asc' else 'asc' %}
+    <th><a href="{{ url_for('contacts_list', sort='co.name', dir=next_dir, q=request.args.get('q'), company_id=request.args.get('company_id')) }}">Empresa</a></th>
+    <th><a href="{{ url_for('contacts_list', sort='ct.name', dir=next_dir, q=request.args.get('q'), company_id=request.args.get('company_id')) }}">Contato</a></th>
+    <th><a href="{{ url_for('contacts_list', sort='ct.role', dir=next_dir, q=request.args.get('q'), company_id=request.args.get('company_id')) }}">Função</a></th>
+    <th><a href="{{ url_for('contacts_list', sort='ct.email', dir=next_dir, q=request.args.get('q'), company_id=request.args.get('company_id')) }}">E-mail</a></th>
+    <th><a href="{{ url_for('contacts_list', sort='ct.phone', dir=next_dir, q=request.args.get('q'), company_id=request.args.get('company_id')) }}">Telefone</a></th>
+    <th><a href="{{ url_for('contacts_list', sort='ct.contact_stage', dir=next_dir, q=request.args.get('q'), company_id=request.args.get('company_id')) }}">Estágio</a></th>
+    <th><a href="{{ url_for('contacts_list', sort='ct.next_date', dir=next_dir, q=request.args.get('q'), company_id=request.args.get('company_id')) }}">Próx. data</a></th>
+    <th></th>
+  </tr></thead>
+  <tbody>
+    {% for r in rows %}
+    <tr data-id="{{ r.id }}">
+      <td>{{ r.company_name }}</td>
+      <td>{{ r.name }}</td>
+      <td>{{ r.role }}</td>
+      <td>{{ r.email }}</td>
+      <td>{{ r.phone }}</td>
+      <td style="min-width:180px">
+        <select class="form-select form-select-sm quick-stage">
+          {% for s in stages %}<option value="{{ s }}" {% if r.contact_stage==s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+        </select>
+      </td>
+      <td><input type="date" class="form-control form-control-sm quick-date" value="{{ r.next_date }}"></td>
+      <td class="text-end">
+        <form method="post" action="{{ url_for('contact_delete', cid=r.id) }}" onsubmit="return confirm('Excluir contato?')">
+          <button class="btn btn-sm btn-outline-danger">Excluir</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="8" class="text-center text-muted">Sem contatos.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<script>
+async function saveQuick(tr, payload) {
+  const id = tr.dataset.id;
+  const res = await fetch(`/contact/${id}/quick`, {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) alert('Erro ao salvar alteração.');
+}
+document.querySelectorAll('tr[data-id]').forEach(tr => {
+  const stageSel = tr.querySelector('.quick-stage');
+  const dateIn = tr.querySelector('.quick-date');
+  stageSel.addEventListener('change', e => saveQuick(tr, { contact_stage: e.target.value }));
+  dateIn.addEventListener('change', e => saveQuick(tr, { next_date: e.target.value }));
+});
+</script>
+{% endblock %}

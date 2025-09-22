@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-3">Tarefas</h2>
+<form class="row g-2 mb-3" method="post" action="{{ url_for('task_create') }}">
+  <div class="col-md-3">
+    <select name="company_id" id="task-company" class="form-select" required>
+      <option value="">Empresa...</option>
+      {% for c in companies %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <select name="contact_id" id="task-contact" class="form-select">
+      <option value="">(Opcional) Contato...</option>
+    </select>
+  </div>
+  <div class="col-md-3"><input name="title" class="form-control" placeholder="Título" required></div>
+  <div class="col-md-2"><input type="date" name="due_date" class="form-control"></div>
+  <div class="col-md-1"><button class="btn btn-success w-100">Adicionar</button></div>
+</form>
+
+<div class="table-responsive">
+<table class="table table-sm table-striped align-middle">
+  <thead><tr><th>Data</th><th>Título</th><th>Empresa</th><th>Contato</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for t in rows %}
+    <tr>
+      <td>{{ t.due_date|dmy }}</td>
+      <td>{{ t.title }}</td>
+      <td>{{ t.company_name }}</td>
+      <td>{{ t.contact_name }}</td>
+      <td>{% if t.done %}<span class="badge bg-secondary">Feita</span>{% else %}<span class="badge bg-warning text-dark">Aberta</span>{% endif %}</td>
+      <td class="text-end">
+        {% if not t.done %}
+        <form method="post" action="{{ url_for('task_done', tid=t.id) }}" style="display:inline">
+          <button class="btn btn-sm btn-outline-primary">Concluir</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<script>
+const companySel = document.getElementById('task-company');
+const contactSel = document.getElementById('task-contact');
+companySel.addEventListener('change', async e => {
+  const id = e.target.value;
+  contactSel.innerHTML = '<option value="">(Opcional) Contato...</option>';
+  if (!id) return;
+  try {
+    const res = await fetch(`/company/${id}/contacts.json`);
+    const data = await res.json();
+    data.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id; opt.textContent = c.name;
+      contactSel.appendChild(opt);
+    });
+  } catch(e) { console.error(e); }
+});
+</script>
+{% endblock %}

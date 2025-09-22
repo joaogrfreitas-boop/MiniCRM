@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-3">Dashboard</h2>
+<div class="row g-3 mb-3">
+  <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted">Empresas</div><div class="display-6">{{ kpis.empresas }}</div></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted">Contatos</div><div class="display-6">{{ kpis.contatos }}</div></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted">Ativas</div><div class="display-6">{{ kpis.ativos }}</div></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted">Inativas</div><div class="display-6">{{ kpis.inativos }}</div></div></div></div>
+</div>
+<div class="row g-3">
+  <div class="col-lg-6"><div class="card h-100"><div class="card-header">Empresas — Status Efetivo</div><div class="card-body"><canvas id="effChart" height="110"></canvas></div></div></div>
+  <div class="col-lg-6"><div class="card h-100"><div class="card-header">Empresas — Status Base</div><div class="card-body"><canvas id="baseChart" height="110"></canvas></div></div></div>
+</div>
+<div class="row g-3 mt-1">
+  <div class="col-12"><div class="card"><div class="card-header">Contatos — por Estágio</div><div class="card-body"><canvas id="contactChart" height="110"></canvas></div></div></div>
+</div>
+<div class="row g-3 mt-1">
+  <div class="col-lg-6"><div class="card h-100"><div class="card-header">Tarefas atrasadas</div><div class="card-body p-0">
+    <table class="table table-sm mb-0"><thead><tr><th>Data</th><th>Empresa</th><th>Contato</th><th>Título</th></tr></thead><tbody>
+      {% for t in overdue %}<tr><td>{{ t.due_date|dmy }}</td><td>{{ t.company_name }}</td><td>{{ t.contact_name }}</td><td>{{ t.title }}</td></tr>
+      {% else %}<tr><td colspan="4" class="text-center text-muted">Sem atrasos.</td></tr>{% endfor %}
+    </tbody></table></div></div></div>
+  <div class="col-lg-6"><div class="card h-100"><div class="card-header">Tarefas — próximos 7 dias</div><div class="card-body p-0">
+    <table class="table table-sm mb-0"><thead><tr><th>Data</th><th>Empresa</th><th>Contato</th><th>Título</th></tr></thead><tbody>
+      {% for t in next7 %}<tr><td>{{ t.due_date|dmy }}</td><td>{{ t.company_name }}</td><td>{{ t.contact_name }}</td><td>{{ t.title }}</td></tr>
+      {% else %}<tr><td colspan="4" class="text-center text-muted">Sem tarefas programadas.</td></tr>{% endfor %}
+    </tbody></table></div></div></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<script>
+new Chart(document.getElementById('effChart'), { type:'bar',
+  data:{ labels: {{ eff_labels|tojson }}, datasets:[{ label:'Empresas', data: {{ eff_counts|tojson }} }] },
+  options:{ responsive:true, plugins:{ legend:{ display:false } } } });
+new Chart(document.getElementById('baseChart'), { type:'bar',
+  data:{ labels: {{ base_labels|tojson }}, datasets:[{ label:'Base', data: {{ base_counts|tojson }} }] },
+  options:{ responsive:true, plugins:{ legend:{ display:false } } } });
+new Chart(document.getElementById('contactChart'), { type:'bar',
+  data:{ labels: {{ contact_labels|tojson }}, datasets:[{ label:'Contatos', data: {{ contact_counts|tojson }} }] },
+  options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ autoSkip:false } } } } });
+</script>
+{% endblock %}
