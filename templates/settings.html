@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Configurações</h2>
-<form method="post">
+<form method="post" class="mt-3">
   <div class="mb-2">
     <label class="form-label">Status Base (empresa) — separados por vírgula</label>
     <input class="form-control" name="company_base_statuses" value="{{ ', '.join(cfg.company_base_statuses) }}">
@@ -15,8 +15,5 @@
     <input class="form-control" name="inactive_stages" value="{{ ', '.join(cfg.inactive_stages) }}">
   </div>
   <button class="btn btn-primary">Salvar</button>
-</form>
-<form class="mt-3" method="post" action="{{ url_for('settings_wipe') }}" onsubmit="return confirm('Tem certeza? Isso apaga toda a base.');">
-  <button class="btn btn-outline-danger">Limpar Base</button>
 </form>
 {% endblock %}

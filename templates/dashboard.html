@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Dashboard</h2>
-<p>Versão compacta do pacote. KPIs e gráficos prontos no app completo.</p>
+<div class="row g-3">
+  <div class="col-md-3"><div class="card"><div class="card-body">
+    <div class="text-muted">Empresas</div><div class="display-6">{{ kpis.empresas }}</div>
+  </div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">
+    <div class="text-muted">Contatos</div><div class="display-6">{{ kpis.contatos }}</div>
+  </div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">
+    <div class="text-muted">Ativas</div><div class="display-6">{{ kpis.ativos }}</div>
+  </div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">
+    <div class="text-muted">Inativas</div><div class="display-6">{{ kpis.inativos }}</div>
+  </div></div></div>
+</div>
 {% endblock %}

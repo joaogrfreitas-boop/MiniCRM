@@ -1,5 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Board</h2>
-<p>Arraste & solte disponível na versão completa.</p>
+<div class="row g-3">
+  {% for stage, cards in columns.items() %}
+  <div class="col">
+    <div class="card h-100">
+      <div class="card-header">{{ stage }}</div>
+      <ul class="list-group list-group-flush">
+        {% for c in cards %}
+        <li class="list-group-item">{{ c.company_name }} — <strong>{{ c.name }}</strong></li>
+        {% else %}
+        <li class="list-group-item text-muted">Sem itens</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endfor %}
+</div>
 {% endblock %}
